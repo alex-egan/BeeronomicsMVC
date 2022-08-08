@@ -120,7 +120,7 @@ namespace BeeronomicsMVC.Services.DrinkService
             };
         }
 
-        public async Task<ServiceResponse<DrinkSimple>> PurchaseDrink(int id)
+        public async Task<ServiceResponse<DrinkSimple>> IncreaseDrinkPrice(int id)
         {
             Drink drink = await _context.Drink.Include(d => d.DrinkPrices).FirstOrDefaultAsync(d => d.ID == id);
             if (drink == null)
@@ -137,20 +137,18 @@ namespace BeeronomicsMVC.Services.DrinkService
             _context.Drink.Update(drink);
             await _context.SaveChangesAsync();
 
-            Drink updatedDrink = await _context.Drink.Include(d => d.DrinkPrices).FirstOrDefaultAsync(d => d.ID == drink.ID);
-
             DrinkSimple updatedSimple = new DrinkSimple
             {
-                ID = updatedDrink.ID,
-                Name = updatedDrink.Name,
-                Symbol = updatedDrink.Symbol,
-                Description = updatedDrink.Description,
-                Category = updatedDrink.Category,
-                AddedBy = updatedDrink.AddedBy,
-                ActivePrice = updatedDrink.DrinkPrices.ActivePrice,
-                MaxPrice = updatedDrink.DrinkPrices.MaxPrice,
-                MinPrice = updatedDrink.DrinkPrices.MinPrice,
-                PriceLastIncreased = updatedDrink.DrinkPrices.PriceLastIncreased
+                ID = drink.ID,
+                Name = drink.Name,
+                Symbol = drink.Symbol,
+                Description = drink.Description,
+                Category = drink.Category,
+                AddedBy = drink.AddedBy,
+                ActivePrice = drink.DrinkPrices.ActivePrice,
+                MaxPrice = drink.DrinkPrices.MaxPrice,
+                MinPrice = drink.DrinkPrices.MinPrice,
+                PriceLastIncreased = drink.DrinkPrices.PriceLastIncreased
             };
 
             return new ServiceResponse<DrinkSimple>
@@ -188,6 +186,46 @@ namespace BeeronomicsMVC.Services.DrinkService
             return new ServiceResponse<DrinkSimple>
             {
                 Data = updatedDrink,
+                Success = true
+            };
+        }
+
+        public async Task<ServiceResponse<DrinkSimple>> DecreaseDrinkPrice(int id)
+        {
+            Drink drink = await _context.Drink
+                .Include(d => d.DrinkPrices)
+                .FirstOrDefaultAsync(d => d.ID == id);
+            if (drink == null)
+            {
+                return new ServiceResponse<DrinkSimple>
+                {
+                    Data = null,
+                    Success = false
+                };
+            }
+
+            drink.DrinkPrices.ActivePrice -= decimal.Parse("0.20");
+            drink.DrinkPrices.PriceLastIncreased = false;
+            _context.Drink.Update(drink);
+            await _context.SaveChangesAsync();
+
+            DrinkSimple updatedSimple = new DrinkSimple
+            {
+                ID = drink.ID,
+                Name = drink.Name,
+                Symbol = drink.Symbol,
+                Description = drink.Description,
+                Category = drink.Category,
+                AddedBy = drink.AddedBy,
+                ActivePrice = drink.DrinkPrices.ActivePrice,
+                MaxPrice = drink.DrinkPrices.MaxPrice,
+                MinPrice = drink.DrinkPrices.MinPrice,
+                PriceLastIncreased = drink.DrinkPrices.PriceLastIncreased
+            };
+
+            return new ServiceResponse<DrinkSimple>
+            {
+                Data = updatedSimple,
                 Success = true
             };
         }

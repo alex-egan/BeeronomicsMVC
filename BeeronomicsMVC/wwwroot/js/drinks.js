@@ -26,8 +26,16 @@ connection.start().then(function () {
     return console.error(err.toString());
 });
 
-function purchaseDrink(id) {
-    connection.invoke("UpdateDrinkPrice", id).catch(function (err) {
+function increaseDrinkPrice(id) {
+    connection.invoke("UpdateDrinkPrice", id, true).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    event.preventDefault();
+}
+
+function decreaseDrinkPrice(id) {
+    connection.invoke("UpdateDrinkPrice", id, false).catch(function (err) {
         return console.error(err.toString());
     });
 

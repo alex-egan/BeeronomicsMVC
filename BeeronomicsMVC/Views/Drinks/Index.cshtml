@@ -23,7 +23,8 @@
                 <td class="col active-price">@drink.DrinkPrices.ActivePrice</td>
                 <td class="col active">@(drink.Active ? "Yes" : "No")</td>
                 <td class="col buttons">
-                    <button class="btn btn-primary btn-purchase" onclick="purchaseDrink(@drink.ID)"><i class="fa-solid fa-cart-shopping"></i></button>
+                    <button class="btn btn-primary btn-increase-price" onclick="increaseDrinkPrice(@drink.ID)"><i class="fa-solid fa-cart-shopping"></i></button>
+                    <button class="btn btn-primary btn-decrease-price" onclick="decreaseDrinkPrice(@drink.ID)"><i class="fa-solid fa-minus"></i></button>
                     <button class="btn btn-primary btn-update" onclick="editDrink(@drink.ID)"><i class="fa-solid fa-pencil"></i></button>
                     <button class="btn btn-primary btn-deactivate" onclick="toggleActiveStatus(@drink.ID)"><i class="@(drink.Active ? "fa-solid fa-ban" : "fa-solid fa-plus")"></i></button>
                 </td>

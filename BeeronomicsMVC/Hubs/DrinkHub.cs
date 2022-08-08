@@ -8,13 +8,24 @@
             _drinkService = drinkService;
         }
 
-        public async Task UpdateDrinkPrice(int id)
+        public async Task UpdateDrinkPrice(int id, bool increase)
         {
             try
             {
-                ServiceResponse<DrinkSimple> response = await _drinkService.PurchaseDrink(id);
+                ServiceResponse<DrinkSimple> response = new ServiceResponse<DrinkSimple>();
+                if (increase)
+                {
+                    response = await _drinkService.IncreaseDrinkPrice(id);
+                }
+                else
+                {
+                    response = await _drinkService.DecreaseDrinkPrice(id);
+                }
+
                 if (response.Success)
                     await Clients.All.SendAsync("DrinkPriceUpdated", response.Data);
+                
+                
             }
             catch (Exception e)
             {
