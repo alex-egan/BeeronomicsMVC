@@ -1,0 +1,48 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+table {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.col {
+    flex: 1;
+    text-align: center;
+}
+
+img {
+    max-width: 100px;
+    max-height: 100px;
+}
+
+.price-increase {
+    color: green;
+}
+
+.price-decrease {
+    color: red;
+}

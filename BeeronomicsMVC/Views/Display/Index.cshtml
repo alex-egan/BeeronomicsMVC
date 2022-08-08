@@ -1,0 +1,74 @@
+﻿@model IEnumerable<BeeronomicsMVC.Models.Drink>
+@inject IJSRuntime JSRuntime
+@inject IDisplayService DisplayService
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href=~/css/site.css />
+    
+    <title>DrinkDisplay</title>
+    
+    <style>
+    body {
+        background-color: black;
+    }
+    .drink-display { 
+        font-family: 'Times Square';
+        color: white;
+        font-size: 30px;
+    }
+    .flexbox {
+        display: flex;
+        flex-direction: row;
+    }
+    .flexbox {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        background: #cecece;
+    }
+
+    .flexitem {
+        height: 100%;
+        margin: 4px;
+        background: #16B6B6FF;
+        width: 100%;
+        max-width: calc(25% - 8px);
+    }
+
+    </style>
+</head>
+<body>
+    <div class="flexbox">
+        @foreach(Drink drink in Model)
+        {
+            if (drink.Active)
+            {
+                <div class="flexitem drink-display" id="div_@drink.ID">
+                    <span id="@drink.ID" class="">@drink.Symbol : @drink.DrinkPrices.ActivePrice</span>&nbsp;&nbsp;&nbsp;<i data-indicator="price" class="@(drink.DrinkPrices.PriceLastIncreased ? "fa-solid fa-arrow-up price-increase" : "fa-solid fa-arrow-down price-decrease")"></i>
+                </div>
+            }
+            else
+            {
+                <div class="flexitem drink-display" id="div_@drink.ID" style="display: none;">
+                    <span id="@drink.ID" class="">@drink.Symbol : @drink.DrinkPrices.ActivePrice</span>&nbsp;&nbsp;&nbsp;<i data-indicator="price" class="@(drink.DrinkPrices.PriceLastIncreased ? "fa-solid fa-arrow-up price-increase" : "fa-solid fa-arrow-down price-decrease")"></i>
+                </div>
+            }
+
+        }
+    </div>
+</body>
+
+<script src="https://kit.fontawesome.com/92134c6582.js" crossorigin="anonymous"></script>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/display.js"></script>
+</html>

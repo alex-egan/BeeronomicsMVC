@@ -1,0 +1,74 @@
+﻿@model BeeronomicsMVC.Models.DrinkSimple
+
+<form>
+    <fieldset title="General Info">
+        <legend>General Info</legend>
+        <div class="row">
+            <div class="col">
+                <label asp-for="ID"></label>
+                <input asp-for="ID" class="form-control" />
+                <span asp-validation-for="ID" class="text-danger"></span>
+            </div>
+            <div class="col">
+                <label asp-for="Symbol"></label>
+                <input asp-for="Symbol" class="form-control" />
+                <span asp-validation-for="Symbol" class="text-danger"></span>
+            </div>
+            <div class="col">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="col">
+                <label asp-for="Category"></label>
+                <input asp-for="Category" class="form-control" />
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+            <div class="col">
+                <label asp-for="Photo"></label>
+                <input asp-for="Photo" class="form-control" />
+                <span asp-validation-for="Photo" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label asp-for="Description"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset title="Prices">
+        <legend>General Info</legend>
+        <div class="row">
+            <div class="col">
+                <label asp-for="ActivePrice"></label>
+                <input asp-for="ActivePrice" class="form-control" />
+                <span asp-validation-for="ActivePrice" class="text-danger"></span>
+            </div>
+            <div class="col">
+                <label asp-for="MaxPrice"></label>
+                <input asp-for="MaxPrice" class="form-control" />
+                <span asp-validation-for="MaxPrice" class="text-danger"></span>
+            </div>
+            <div class="col">
+                <label asp-for="MinPrice"></label>
+                <input asp-for="MinPrice" class="form-control" />
+                <span asp-validation-for="MinPrice" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label asp-for="AddedBy"></label>
+                <input asp-for="AddedBy" class="form-control" />
+                <span asp-validation-for="AddedBy" class="text-danger"></span>
+            </div>
+        </div>
+    </fieldset>
+    <button class="btn btn-primary btn-submit" id="update" type="submit">
+        <i class="oi oi-cloud"></i> Save
+    </button>
+</form>
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/edit.js"></script>
