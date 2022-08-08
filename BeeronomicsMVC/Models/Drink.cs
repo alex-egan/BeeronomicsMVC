@@ -23,6 +23,7 @@ namespace BeeronomicsMVC.Models
         public DateTime? DateUpdated { get; set; }
         public bool Active { get; set; }
         public string Photo { get; set; }
+        public bool PriceLastIncreased { get; set; }
 
         public virtual DrinkPrices DrinkPrices { get; set; }
         public virtual ICollection<PurchaseHistory> PurchaseHistory { get; set; }

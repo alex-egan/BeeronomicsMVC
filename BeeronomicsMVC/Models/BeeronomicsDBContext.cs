@@ -36,6 +36,10 @@ namespace BeeronomicsMVC.Models
 
                 entity.Property(e => e.Name).HasMaxLength(255);
 
+                entity.Property(e => e.PriceLastIncreased)
+                    .IsRequired()
+                    .HasDefaultValueSql("('1')");
+
                 entity.Property(e => e.Symbol).HasMaxLength(10);
 
                 entity.Property(e => e.UpdatedBy).HasMaxLength(55);

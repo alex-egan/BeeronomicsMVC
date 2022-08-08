@@ -42,7 +42,7 @@ namespace BeeronomicsMVC.Models
             }
 
             drink.DrinkPrices.ActivePrice -= decimal.Parse("0.20");
-            drink.DrinkPrices.PriceLastIncreased = false;
+            drink.PriceLastIncreased = false;
 
             _context.Drink.Update(drink);
             await _context.SaveChangesAsync();

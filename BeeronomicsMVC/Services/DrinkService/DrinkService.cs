@@ -133,7 +133,9 @@ namespace BeeronomicsMVC.Services.DrinkService
             }
 
             drink.DrinkPrices.ActivePrice += decimal.Parse("0.20");
-            drink.DrinkPrices.PriceLastIncreased = true;
+            if (drink.DrinkPrices.ActivePrice > drink.DrinkPrices.MaxPrice)
+                drink.DrinkPrices.ActivePrice = drink.DrinkPrices.MaxPrice;
+            drink.PriceLastIncreased = true;
             _context.Drink.Update(drink);
             await _context.SaveChangesAsync();
 
@@ -148,7 +150,7 @@ namespace BeeronomicsMVC.Services.DrinkService
                 ActivePrice = drink.DrinkPrices.ActivePrice,
                 MaxPrice = drink.DrinkPrices.MaxPrice,
                 MinPrice = drink.DrinkPrices.MinPrice,
-                PriceLastIncreased = drink.DrinkPrices.PriceLastIncreased
+                PriceLastIncreased = drink.PriceLastIncreased
             };
 
             return new ServiceResponse<DrinkSimple>
@@ -205,7 +207,9 @@ namespace BeeronomicsMVC.Services.DrinkService
             }
 
             drink.DrinkPrices.ActivePrice -= decimal.Parse("0.20");
-            drink.DrinkPrices.PriceLastIncreased = false;
+            if (drink.DrinkPrices.ActivePrice < drink.DrinkPrices.MinPrice)
+                drink.DrinkPrices.ActivePrice = drink.DrinkPrices.MinPrice;
+            drink.PriceLastIncreased = false;
             _context.Drink.Update(drink);
             await _context.SaveChangesAsync();
 
@@ -220,7 +224,7 @@ namespace BeeronomicsMVC.Services.DrinkService
                 ActivePrice = drink.DrinkPrices.ActivePrice,
                 MaxPrice = drink.DrinkPrices.MaxPrice,
                 MinPrice = drink.DrinkPrices.MinPrice,
-                PriceLastIncreased = drink.DrinkPrices.PriceLastIncreased
+                PriceLastIncreased = drink.PriceLastIncreased
             };
 
             return new ServiceResponse<DrinkSimple>
