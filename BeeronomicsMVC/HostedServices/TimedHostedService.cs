@@ -16,9 +16,9 @@
                 try
                 {
                     SetInitialPrices();
-                    await Task.Delay(1000*30);
+                    await Task.Delay(1000*180);
                     InitiateCrash();
-                    await Task.Delay(1000*10);
+                    await Task.Delay(1000*120);
                     //Crash Ends
                 }
                 catch (OperationCanceledException)
