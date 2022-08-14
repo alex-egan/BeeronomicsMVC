@@ -3,7 +3,6 @@
     public interface ICrashService
     {
         Task InitiateCrash();
-        Task StopCrash();
         Task SetInitialPrices();
     }
 }

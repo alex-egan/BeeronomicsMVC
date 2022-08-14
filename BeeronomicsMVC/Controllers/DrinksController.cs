@@ -21,7 +21,7 @@ namespace BeeronomicsMVC.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            ServiceResponse<DrinkSimple> response = await _drinkService.GetDrink(id);
+            ServiceResponse<DisplayDrink> response = await _drinkService.GetDrink(id);
             if (!response.Success || response.Data == null) {
                 return NotFound();
             }

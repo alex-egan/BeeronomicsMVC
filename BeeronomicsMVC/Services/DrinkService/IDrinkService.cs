@@ -4,10 +4,16 @@
     {
         Task<ServiceResponse<List<Drink>>> GetAllDrinks();
         Task<ServiceResponse<List<Drink>>> GetActiveDrinks();
-        Task<ServiceResponse<DrinkSimple>> GetDrink(int id);
-        Task<ServiceResponse<DrinkSimple>> UpdateDrink(DrinkSimple drink);
-        Task<ServiceResponse<DrinkSimple>> IncreaseDrinkPrice(int id);
-        Task<ServiceResponse<DrinkSimple>> DecreaseDrinkPrice(int id);
+        Task<ServiceResponse<DisplayDrink>> GetDrink(int id);
+        Task<ServiceResponse<DisplayDrink>> UpdateDrink(DisplayDrink drink);
+        Task<ServiceResponse<DisplayDrink>> IncreaseDrinkPrice(int id);
+        Task<ServiceResponse<DisplayDrink>> DecreaseDrinkPrice(int id);
         Task<ServiceResponse<bool>> ToggleActiveStatus(int id);
+        Task<Drink> GetDrinkFromDBByID(int id);
+        DisplayDrink CreateDisplayDrinkObject(Drink drink);
+        Task<List<Drink>> GetAllDrinksFromDB();
+        Task<List<Drink>> GetActiveDrinksFromDB();
+        void AddPurchaseHistoryForDrink(Drink drink);
+
     }
 }

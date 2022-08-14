@@ -17,9 +17,7 @@ namespace BeeronomicsMVC.Services.DrinkService
 
         public async Task<ServiceResponse<bool>> ToggleActiveStatus(int id)
         {
-            Drink drink = await _context.Drink
-                .Include(d => d.DrinkPrices)
-                .FirstOrDefaultAsync(d => d.ID == id);
+            Drink drink = await GetDrinkFromDBByID(id);
 
             if (drink == null)
             {
@@ -42,22 +40,38 @@ namespace BeeronomicsMVC.Services.DrinkService
             };
         }
 
-        public async Task<ServiceResponse<DrinkSimple>> GetDrink(int id)
+        public async Task<Drink> GetDrinkFromDBByID(int id)
         {
-            Drink drink = await _context.Drink
+            return await _context.Drink
                 .Include(d => d.DrinkPrices)
                 .FirstOrDefaultAsync(d => d.ID == id);
+        }
+
+        public async Task<ServiceResponse<DisplayDrink>> GetDrink(int id)
+        {
+            Drink drink = await GetDrinkFromDBByID(id);
 
             if (drink == null)
             {
-                return new ServiceResponse<DrinkSimple>
+                return new ServiceResponse<DisplayDrink>
                 {
                     Success = false,
                     Message = "Could not find drinks."
                 };
             }
 
-            DrinkSimple drinkSimple = new DrinkSimple
+            DisplayDrink drinkSimple = CreateDisplayDrinkObject(drink);
+
+            return new ServiceResponse<DisplayDrink>
+            {
+                Success = true,
+                Data = drinkSimple
+            };
+        }
+
+        public DisplayDrink CreateDisplayDrinkObject(Drink drink)
+        {
+            return new DisplayDrink
             {
                 ID = drink.ID,
                 Name = drink.Name,
@@ -70,20 +84,11 @@ namespace BeeronomicsMVC.Services.DrinkService
                 MaxPrice = drink.DrinkPrices.MaxPrice,
                 MinPrice = drink.DrinkPrices.MinPrice
             };
-
-            return new ServiceResponse<DrinkSimple>
-            {
-                Success = true,
-                Data = drinkSimple
-            };
         }
 
         public async Task<ServiceResponse<List<Drink>>> GetAllDrinks()
         {
-            List<Drink> drinks = await _context
-                .Drink
-                .Include(d => d.DrinkPrices)
-                .ToListAsync();
+            List<Drink> drinks = await GetAllDrinksFromDB();
 
             if (drinks == null || drinks.Count == 0)
             {
@@ -99,15 +104,19 @@ namespace BeeronomicsMVC.Services.DrinkService
                 Success = true,
                 Data = drinks
             };
+        }
+
+        public async Task<List<Drink>> GetAllDrinksFromDB()
+        {
+            return await _context
+                .Drink
+                .Include(d => d.DrinkPrices)
+                .ToListAsync();
         }
 
         public async Task<ServiceResponse<List<Drink>>> GetActiveDrinks()
         {
-            List<Drink> drinks = await _context
-                .Drink
-                .Include(d => d.DrinkPrices)
-                .Where(d => d.Active == true)
-                .ToListAsync();
+            List<Drink> drinks = await GetActiveDrinksFromDB();
 
             if (drinks == null || drinks.Count == 0)
             {
@@ -125,12 +134,21 @@ namespace BeeronomicsMVC.Services.DrinkService
             };
         }
 
-        public async Task<ServiceResponse<DrinkSimple>> IncreaseDrinkPrice(int id)
+        public async Task<List<Drink>> GetActiveDrinksFromDB()
         {
-            Drink drink = await _context.Drink.Include(d => d.DrinkPrices).FirstOrDefaultAsync(d => d.ID == id);
+            return await _context
+                .Drink
+                .Include(d => d.DrinkPrices)
+                .Where(d => d.Active == true)
+                .ToListAsync();
+        }
+
+        public async Task<ServiceResponse<DisplayDrink>> IncreaseDrinkPrice(int id)
+        {
+            Drink drink = await GetDrinkFromDBByID(id);
             if (drink == null)
             {
-                return new ServiceResponse<DrinkSimple>
+                return new ServiceResponse<DisplayDrink>
                 {
                     Data = null,
                     Success = false
@@ -141,6 +159,25 @@ namespace BeeronomicsMVC.Services.DrinkService
             if (drink.DrinkPrices.ActivePrice > drink.DrinkPrices.MaxPrice)
                 drink.DrinkPrices.ActivePrice = drink.DrinkPrices.MaxPrice;
             drink.PriceLastIncreased = true;
+            
+            AddPurchaseHistoryForDrink(drink);
+            _context.Drink.Update(drink);
+            await _context.SaveChangesAsync();
+
+            DisplayDrink displayDrink = CreateDisplayDrinkObject(drink);
+
+            await _drinkHub.Clients.All.SendAsync("DrinkPriceUpdated", displayDrink);
+            drink.Timer = _timedHostedService.StartNewTimer(drink);
+
+            return new ServiceResponse<DisplayDrink>
+            {
+                Data = displayDrink,
+                Success = true
+            };
+        }
+
+        public void AddPurchaseHistoryForDrink(Drink drink)
+        {
             _context.PurchaseHistory.Add(new PurchaseHistory
             {
                 Fk_Drink_ID = drink.ID,
@@ -148,40 +185,15 @@ namespace BeeronomicsMVC.Services.DrinkService
                 ActivePrice = drink.DrinkPrices.ActivePrice,
                 TimeStamp = DateTime.Now,
             });
-            _context.Drink.Update(drink);
-            await _context.SaveChangesAsync();
-
-            DrinkSimple updatedSimple = new DrinkSimple
-            {
-                ID = drink.ID,
-                Name = drink.Name,
-                Symbol = drink.Symbol,
-                Description = drink.Description,
-                Category = drink.Category,
-                AddedBy = drink.AddedBy,
-                ActivePrice = drink.DrinkPrices.ActivePrice,
-                MaxPrice = drink.DrinkPrices.MaxPrice,
-                MinPrice = drink.DrinkPrices.MinPrice,
-                PriceLastIncreased = drink.PriceLastIncreased
-            };
-
-            await _drinkHub.Clients.All.SendAsync("DrinkPriceUpdated", updatedSimple);
-            drink.Timer = _timedHostedService.StartNewTimer(drink);
-
-            return new ServiceResponse<DrinkSimple>
-            {
-                Data = updatedSimple,
-                Success = true
-            };
         }
 
-        public async Task<ServiceResponse<DrinkSimple>> UpdateDrink(DrinkSimple updatedDrink)
+        public async Task<ServiceResponse<DisplayDrink>> UpdateDrink(DisplayDrink updatedDrink)
         {
-            Drink drink = await _context.Drink.Include(d => d.DrinkPrices).FirstOrDefaultAsync(d => d.ID == updatedDrink.ID);
+            Drink drink = await GetDrinkFromDBByID(updatedDrink.ID);
 
             if (drink == null)
             {
-                return new ServiceResponse<DrinkSimple>
+                return new ServiceResponse<DisplayDrink>
                 {
                     Data = null,
                     Success = false
@@ -200,21 +212,19 @@ namespace BeeronomicsMVC.Services.DrinkService
             _context.Drink.Update(drink);
             await _context.SaveChangesAsync();
 
-            return new ServiceResponse<DrinkSimple>
+            return new ServiceResponse<DisplayDrink>
             {
                 Data = updatedDrink,
                 Success = true
             };
         }
 
-        public async Task<ServiceResponse<DrinkSimple>> DecreaseDrinkPrice(int id)
+        public async Task<ServiceResponse<DisplayDrink>> DecreaseDrinkPrice(int id)
         {
-            Drink drink = await _context.Drink
-                .Include(d => d.DrinkPrices)
-                .FirstOrDefaultAsync(d => d.ID == id);
+            Drink drink = await GetDrinkFromDBByID(id);
             if (drink == null)
             {
-                return new ServiceResponse<DrinkSimple>
+                return new ServiceResponse<DisplayDrink>
                 {
                     Data = null,
                     Success = false
@@ -225,36 +235,19 @@ namespace BeeronomicsMVC.Services.DrinkService
             if (drink.DrinkPrices.ActivePrice < drink.DrinkPrices.MinPrice)
                 drink.DrinkPrices.ActivePrice = drink.DrinkPrices.MinPrice;
             drink.PriceLastIncreased = false;
-            _context.PurchaseHistory.Add(new PurchaseHistory
-            {
-                Fk_Drink_ID = drink.ID,
-                Purchases = 1,
-                ActivePrice = drink.DrinkPrices.ActivePrice,
-                TimeStamp = DateTime.Now,
-            });
+
+            AddPurchaseHistoryForDrink(drink);
             _context.Drink.Update(drink);
             await _context.SaveChangesAsync();
 
-            DrinkSimple updatedSimple = new DrinkSimple
-            {
-                ID = drink.ID,
-                Name = drink.Name,
-                Symbol = drink.Symbol,
-                Description = drink.Description,
-                Category = drink.Category,
-                AddedBy = drink.AddedBy,
-                ActivePrice = drink.DrinkPrices.ActivePrice,
-                MaxPrice = drink.DrinkPrices.MaxPrice,
-                MinPrice = drink.DrinkPrices.MinPrice,
-                PriceLastIncreased = drink.PriceLastIncreased
-            };
+            DisplayDrink displayDrink = CreateDisplayDrinkObject(drink);
 
-            await _drinkHub.Clients.All.SendAsync("DrinkPriceUpdated", updatedSimple);
+            await _drinkHub.Clients.All.SendAsync("DrinkPriceUpdated", displayDrink);
             drink.Timer = _timedHostedService.StartNewTimer(drink);
 
-            return new ServiceResponse<DrinkSimple>
+            return new ServiceResponse<DisplayDrink>
             {
-                Data = updatedSimple,
+                Data = displayDrink,
                 Success = true
             };
         }  

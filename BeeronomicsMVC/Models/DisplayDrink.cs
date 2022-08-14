@@ -1,8 +1,8 @@
 ﻿namespace BeeronomicsMVC.Models
 {
-    public class DrinkSimple
+    public class DisplayDrink
     {
-        public DrinkSimple()
+        public DisplayDrink()
         {
 
         }
@@ -17,6 +17,6 @@
         public decimal MaxPrice { get; set; }
         public decimal MinPrice { get; set; }
         public bool PriceLastIncreased { get; set; }
-        public System.Timers.Timer Timer { get; set; }
+        public System.Timers.Timer? Timer { get; set; }
     }
 }

@@ -53,7 +53,7 @@
             using (var scope = _scopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<IDrinkService>();
-                ServiceResponse<DrinkSimple> response = await context.DecreaseDrinkPrice(drink.ID);
+                ServiceResponse<DisplayDrink> response = await context.DecreaseDrinkPrice(drink.ID);
                 Console.WriteLine("Success");
             }
         }

@@ -12,7 +12,7 @@
         {
             try
             {
-                ServiceResponse<DrinkSimple> response = new ServiceResponse<DrinkSimple>();
+                ServiceResponse<DisplayDrink> response = new ServiceResponse<DisplayDrink>();
                 if (increase)
                 {
                     response = await _drinkService.IncreaseDrinkPrice(id);
@@ -22,17 +22,17 @@
                     response = await _drinkService.DecreaseDrinkPrice(id);
                 }
             }
-            catch (Exception e)
+            catch
             {
                 Console.WriteLine();
             }
         }
 
-        public async Task UpdateDrink(DrinkSimple drink)
+        public async Task UpdateDrink(DisplayDrink drink)
         {
             try
             {
-                ServiceResponse<DrinkSimple> response = await _drinkService.UpdateDrink(drink);
+                ServiceResponse<DisplayDrink> response = await _drinkService.UpdateDrink(drink);
                 if (response.Success)
                     await Clients.All.SendAsync("DrinkUpdated", response.Data);
             }
