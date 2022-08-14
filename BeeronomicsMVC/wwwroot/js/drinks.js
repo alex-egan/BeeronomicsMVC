@@ -11,7 +11,7 @@ connection.on("DrinkUpdated", function (drink) {
     document.getElementById(`drink_${drink.id}`).querySelector('td.photo img').src = drink.photo;
     document.getElementById(`drink_${drink.id}`).querySelector('td.symbol').innerHTML = drink.symbol;
     document.getElementById(`drink_${drink.id}`).querySelector('td.name').innerHTML = drink.name;
-    document.getElementById(`drink_${drink.id}`).querySelector('td.active-price').innerHTML = drink.activePrice;
+    document.getElementById(`drink_${drink.id}`).querySelector('td.active-price').innerHTML = drink.activePrice.toFixed(2);
     document.getElementById(`drink_${drink.id}`).querySelector('td.active').innerHTML = (active ? "Yes" : "No");
 });
 
@@ -22,7 +22,7 @@ connection.on("ActiveStatusToggled", function (active, id) {
 
 connection.on("CrashInitiated", function (drinks) {
     for (var x = 0; x > drinks.length; x++) {
-        document.getElementById(`drink_${drink.id}`).querySelector('td.activeprice').src = drink[x].photo;
+        document.getElementById(`drink_${drink.id}`).querySelector('td.activeprice') = drink[x].activePrice.toFixed(2);
     }
 });
 

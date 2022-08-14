@@ -9,9 +9,9 @@ namespace BeeronomicsMVC.Models
     {
         public int Pk_DrinkPrice_ID { get; set; }
         public int? Fk_Drink_ID { get; set; }
-        public decimal? ActivePrice { get; set; }
-        public decimal? MinPrice { get; set; }
-        public decimal? MaxPrice { get; set; }
+        public decimal ActivePrice { get; set; }
+        public decimal MinPrice { get; set; }
+        public decimal MaxPrice { get; set; }
         public DateTime? UpdatedOn { get; set; }
         public bool PriceLastIncreased { get; set; }
 
