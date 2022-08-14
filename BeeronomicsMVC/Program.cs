@@ -4,7 +4,6 @@ global using BeeronomicsMVC.Services.DrinkService;
 global using BeeronomicsMVC.Services.DisplayService;
 global using BeeronomicsMVC.Services.ChangeService;
 global using BeeronomicsMVC.Services.CrashService;
-global using BeeronomicsMVC.Services.TimerService;
 global using Microsoft.AspNetCore.SignalR;
 global using BeeronomicsMVC.Hubs;
 global using Microsoft.JSInterop;
@@ -31,7 +30,6 @@ builder.Services.AddScoped<IDrinkService, DrinkService>();
 builder.Services.AddScoped<IDisplayService, DisplayService>();
 builder.Services.AddScoped<IChangeService, ChangeService>();
 builder.Services.AddScoped<ICrashService, CrashService>();
-builder.Services.AddScoped<ITimerService, TimerService>();
 
 builder.Services.AddMvc();
 
