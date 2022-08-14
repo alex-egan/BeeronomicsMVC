@@ -250,6 +250,15 @@ namespace BeeronomicsMVC.Services.DrinkService
                 Data = displayDrink,
                 Success = true
             };
-        }  
+        }
+
+        public List<PurchaseHistory> GetPurchaseHistoryForDrink(int id)
+        {
+            return _context.PurchaseHistory
+                .Where(d => d.Fk_Drink_ID == id)
+                .OrderByDescending(d => d.Pk_Purchase_ID)
+                .Take(10)
+                .ToList();
+        }
     }
 }

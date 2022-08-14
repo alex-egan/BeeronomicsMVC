@@ -18,5 +18,12 @@ namespace BeeronomicsMVC.Controllers
                 
             return View(response.Data);
         }
+
+        [HttpGet]
+        public async Task<List<PurchaseHistory>> GetChartData(int id)
+        {
+            List<PurchaseHistory> PurchaseHistory = _drinkService.GetPurchaseHistoryForDrink(id);
+            return PurchaseHistory;
+        }
     }
 }

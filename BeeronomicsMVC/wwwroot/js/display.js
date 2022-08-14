@@ -1,4 +1,48 @@
 ﻿"use strict";
+var charts = [];
+
+$(document).ready(function () {
+    $(".drink-display").each(function () {
+        let id = this.querySelector("span").id;
+
+        $.ajax({
+            url: `${getChartDataUrl}/${id}`,
+            context: document.body,
+            data: id
+        }).done(function (purchaseHistories) {
+            if (purchaseHistories.length > 0) {
+                let data = [];
+                for (let x = 0; x < purchaseHistories.length; x++) {
+                    data.push(purchaseHistories[x].activePrice.toFixed(2));
+                }
+
+                //Charts are not showing the line itself, but they are displaying fine.
+                const ctx = this.querySelector('canvas').getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: 'Last 10',
+                            data: data,
+                            fill: true,
+                            backgroundColor: 'black',
+                            tension: 0.5
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                charts.push(chart);
+            }
+        });
+    });
+});
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/drinkHub").build();
 
