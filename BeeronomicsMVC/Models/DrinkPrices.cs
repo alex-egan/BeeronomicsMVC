@@ -13,6 +13,7 @@ namespace BeeronomicsMVC.Models
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
         public DateTime? UpdatedOn { get; set; }
+        public bool PriceLastIncreased { get; set; }
 
         public virtual Drink Fk_Drink { get; set; }
     }

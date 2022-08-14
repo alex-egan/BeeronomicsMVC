@@ -3,9 +3,11 @@
     public class TimedHostedService : BackgroundService
     {
         private readonly IServiceScopeFactory _scopeFactory;
-        public TimedHostedService(IServiceScopeFactory scopeFactory)
+        private readonly IServiceProvider _provider;
+        public TimedHostedService(IServiceScopeFactory scopeFactory, IServiceProvider provider)
         {
             _scopeFactory = scopeFactory;
+            _provider = provider;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -16,15 +18,13 @@
                 try
                 {
                     SetInitialPrices();
-                    await Task.Delay(1000*180);
+                    await Task.Delay(1000*20);
                     InitiateCrash();
-                    await Task.Delay(1000*120);
+                    await Task.Delay(1000*20);
                     //Crash Ends
                 }
                 catch (OperationCanceledException)
                 {
-                    // catch the cancellation exception
-                    // to stop execution
                     return;
                 }
             }
@@ -46,6 +46,36 @@
                 var context = scope.ServiceProvider.GetRequiredService<ICrashService>();
                 await context.InitiateCrash();
             }
+        }
+
+        public async Task DecreaseDrinkPrice(Drink drink)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<IDrinkService>();
+                ServiceResponse<DrinkSimple> response = await context.DecreaseDrinkPrice(drink.ID);
+                Console.WriteLine("Success");
+            }
+        }
+
+        public void Elapsed(object state)
+        {
+            Drink drink = (Drink)state;
+            _ = DecreaseDrinkPrice(drink);
+        }
+
+        public Timer StartNewTimer(Drink drink)
+        {
+            if (drink.Timer != null)
+            {
+                drink.Timer.Change(Timeout.Infinite, Timeout.Infinite);
+                drink.Timer = null;
+            }
+
+            Random rnd = new Random();
+            int interval = rnd.Next(10, 20);
+            Timer timer = new Timer(Elapsed, drink, (1000 * interval), Timeout.Infinite);
+            return timer;
         }
     }
 }

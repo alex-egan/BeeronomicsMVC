@@ -6,10 +6,12 @@ namespace BeeronomicsMVC.Services.CrashService
     {
         private readonly BeeronomicsDBContext _context;
         private readonly IHubContext<DrinkHub> _drinkHub;
-        public CrashService(BeeronomicsDBContext context, IHubContext<DrinkHub> drinkHub)
+        private readonly TimedHostedService _timedHostedService;
+        public CrashService(BeeronomicsDBContext context, IHubContext<DrinkHub> drinkHub, TimedHostedService timedHostedService)
         {
             _context = context;
             _drinkHub = drinkHub;
+            _timedHostedService = timedHostedService;
         }
         public async Task InitiateCrash()
         {
@@ -61,6 +63,7 @@ namespace BeeronomicsMVC.Services.CrashService
             {
                 drink.DrinkPrices.ActivePrice = (drink.DrinkPrices.MaxPrice + drink.DrinkPrices.MinPrice) / 2;
                 drink.PriceLastIncreased = true;
+                drink.Timer = _timedHostedService.StartNewTimer(drink);
                 _context.Drink.Update(drink);
 
                 DrinkSimple updatedSimple = new DrinkSimple

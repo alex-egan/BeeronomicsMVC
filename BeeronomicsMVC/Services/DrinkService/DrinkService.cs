@@ -1,13 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Timers;
 
 namespace BeeronomicsMVC.Services.DrinkService
 {
     public class DrinkService : IDrinkService
     {
         private readonly BeeronomicsDBContext _context;
-        public DrinkService(BeeronomicsDBContext context)
+        private readonly IHubContext<DrinkHub> _drinkHub;
+        private readonly TimedHostedService _timedHostedService;
+        public DrinkService(BeeronomicsDBContext context, IHubContext<DrinkHub> drinkHub, TimedHostedService timedHostedService)
         {
             _context = context;
+            _drinkHub = drinkHub;
+            _timedHostedService = timedHostedService;
         }
 
         public async Task<ServiceResponse<bool>> ToggleActiveStatus(int id)
@@ -136,6 +141,13 @@ namespace BeeronomicsMVC.Services.DrinkService
             if (drink.DrinkPrices.ActivePrice > drink.DrinkPrices.MaxPrice)
                 drink.DrinkPrices.ActivePrice = drink.DrinkPrices.MaxPrice;
             drink.PriceLastIncreased = true;
+            _context.PurchaseHistory.Add(new PurchaseHistory
+            {
+                Fk_Drink_ID = drink.ID,
+                Purchases = 1,
+                ActivePrice = drink.DrinkPrices.ActivePrice,
+                TimeStamp = DateTime.Now,
+            });
             _context.Drink.Update(drink);
             await _context.SaveChangesAsync();
 
@@ -152,6 +164,9 @@ namespace BeeronomicsMVC.Services.DrinkService
                 MinPrice = drink.DrinkPrices.MinPrice,
                 PriceLastIncreased = drink.PriceLastIncreased
             };
+
+            await _drinkHub.Clients.All.SendAsync("DrinkPriceUpdated", updatedSimple);
+            drink.Timer = _timedHostedService.StartNewTimer(drink);
 
             return new ServiceResponse<DrinkSimple>
             {
@@ -210,6 +225,13 @@ namespace BeeronomicsMVC.Services.DrinkService
             if (drink.DrinkPrices.ActivePrice < drink.DrinkPrices.MinPrice)
                 drink.DrinkPrices.ActivePrice = drink.DrinkPrices.MinPrice;
             drink.PriceLastIncreased = false;
+            _context.PurchaseHistory.Add(new PurchaseHistory
+            {
+                Fk_Drink_ID = drink.ID,
+                Purchases = 1,
+                ActivePrice = drink.DrinkPrices.ActivePrice,
+                TimeStamp = DateTime.Now,
+            });
             _context.Drink.Update(drink);
             await _context.SaveChangesAsync();
 
@@ -227,11 +249,14 @@ namespace BeeronomicsMVC.Services.DrinkService
                 PriceLastIncreased = drink.PriceLastIncreased
             };
 
+            await _drinkHub.Clients.All.SendAsync("DrinkPriceUpdated", updatedSimple);
+            drink.Timer = _timedHostedService.StartNewTimer(drink);
+
             return new ServiceResponse<DrinkSimple>
             {
                 Data = updatedSimple,
                 Success = true
             };
-        }
+        }  
     }
 }

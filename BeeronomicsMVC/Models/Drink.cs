@@ -2,6 +2,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeeronomicsMVC.Models
 {
@@ -24,6 +25,8 @@ namespace BeeronomicsMVC.Models
         public bool Active { get; set; }
         public string Photo { get; set; }
         public bool PriceLastIncreased { get; set; }
+        [NotMapped]
+        public Timer Timer { get; set; }
 
         public virtual DrinkPrices DrinkPrices { get; set; }
         public virtual ICollection<PurchaseHistory> PurchaseHistory { get; set; }

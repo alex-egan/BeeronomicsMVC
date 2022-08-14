@@ -4,6 +4,7 @@ global using BeeronomicsMVC.Services.DrinkService;
 global using BeeronomicsMVC.Services.DisplayService;
 global using BeeronomicsMVC.Services.ChangeService;
 global using BeeronomicsMVC.Services.CrashService;
+global using BeeronomicsMVC.Services.TimerService;
 global using Microsoft.AspNetCore.SignalR;
 global using BeeronomicsMVC.Hubs;
 global using Microsoft.JSInterop;
@@ -15,7 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("BeeronomicsDev");
 builder.Services.AddDbContext<BeeronomicsDBContext>(x => x.UseSqlServer(connectionString));
 
-builder.Services.AddHostedService<TimedHostedService>();
+builder.Services.AddSingleton<TimedHostedService>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<TimedHostedService>());
 
 //builder.Services.AddSingleton<IHostedService, Timers>(t => new Timers(new BeeronomicsDBContext()));
 
@@ -29,6 +31,7 @@ builder.Services.AddScoped<IDrinkService, DrinkService>();
 builder.Services.AddScoped<IDisplayService, DisplayService>();
 builder.Services.AddScoped<IChangeService, ChangeService>();
 builder.Services.AddScoped<ICrashService, CrashService>();
+builder.Services.AddScoped<ITimerService, TimerService>();
 
 builder.Services.AddMvc();
 

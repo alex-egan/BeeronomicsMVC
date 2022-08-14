@@ -9,6 +9,5 @@
         Task<ServiceResponse<DrinkSimple>> IncreaseDrinkPrice(int id);
         Task<ServiceResponse<DrinkSimple>> DecreaseDrinkPrice(int id);
         Task<ServiceResponse<bool>> ToggleActiveStatus(int id);
-
     }
 }

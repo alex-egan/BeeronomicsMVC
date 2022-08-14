@@ -21,11 +21,6 @@
                 {
                     response = await _drinkService.DecreaseDrinkPrice(id);
                 }
-
-                if (response.Success)
-                    await Clients.All.SendAsync("DrinkPriceUpdated", response.Data);
-                
-                
             }
             catch (Exception e)
             {

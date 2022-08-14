@@ -74,8 +74,6 @@ namespace BeeronomicsMVC.Models
                 entity.HasKey(e => e.Pk_Purchase_ID)
                     .HasName("PK__Purchase__E8B165581CA51FEF");
 
-                entity.Property(e => e.Pk_Purchase_ID).ValueGeneratedNever();
-
                 entity.Property(e => e.ActivePrice).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.Purchases).HasDefaultValueSql("((0))");
