@@ -18,9 +18,9 @@
                 try
                 {
                     SetInitialPrices();
-                    await Task.Delay(1000*20);
+                    await Task.Delay(1000 * 40);
                     InitiateCrash();
-                    await Task.Delay(1000*20);
+                    await Task.Delay(1000 * 20);
                     //Crash Ends
                 }
                 catch (OperationCanceledException)
@@ -58,7 +58,7 @@
             }
         }
 
-        public void Elapsed(object state)
+        public void DrinkTimerElapsed(object state)
         {
             Drink drink = (Drink)state;
             _ = DecreaseDrinkPrice(drink);
@@ -74,7 +74,7 @@
 
             Random rnd = new Random();
             int interval = rnd.Next(10, 20);
-            Timer timer = new Timer(Elapsed, drink, (1000 * interval), Timeout.Infinite);
+            Timer timer = new Timer(DrinkTimerElapsed, drink, (1000 * interval), Timeout.Infinite);
             return timer;
         }
     }
