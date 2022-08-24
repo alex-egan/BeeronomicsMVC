@@ -15,6 +15,7 @@
         Task<List<Drink>> GetActiveDrinksFromDB();
         void AddPurchaseHistoryForDrink(Drink drink);
         List<PurchaseHistory> GetPurchaseHistoryForDrink(int id);
+        Task<Drink> CreateDrink(DisplayDrink displayDrink);
 
     }
 }

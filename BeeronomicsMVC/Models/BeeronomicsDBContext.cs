@@ -18,12 +18,20 @@ namespace BeeronomicsMVC.Models
         {
         }
 
+        public virtual DbSet<Crash> Crash { get; set; }
         public virtual DbSet<Drink> Drink { get; set; }
         public virtual DbSet<DrinkPrices> DrinkPrices { get; set; }
         public virtual DbSet<PurchaseHistory> PurchaseHistory { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Crash>(entity =>
+            {
+                entity.Property(e => e.EndTime).HasColumnType("datetime");
+
+                entity.Property(e => e.StartTime).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<Drink>(entity =>
             {
                 entity.Property(e => e.AddedBy).HasMaxLength(55);

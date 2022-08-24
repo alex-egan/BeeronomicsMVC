@@ -37,8 +37,56 @@ namespace BeeronomicsMVC.Services.CrashService
                 displayDrinks.Add(displayDrink);
             });
 
+            _context.Crash.Add(new Crash
+            {
+                IsActive = true,
+                StartTime = DateTime.Now
+            });
+
             await _context.SaveChangesAsync();
+
+            await _timedHostedService.StopAllTimers();
             await _drinkHub.Clients.All.SendAsync("CrashActionInitiated", displayDrinks);
+        }
+
+        public async Task<bool> EndCrash()
+        {
+            Crash latestCrash = await GetLatestCrashAsync();
+            latestCrash.IsActive = false;
+            latestCrash.EndTime = DateTime.Now;
+
+            _context.Crash.Update(latestCrash);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> IsCrashActive()
+        {
+            Crash latestCrash = await GetLatestCrashAsync();
+
+            return latestCrash.IsActive;
+        }
+
+        public async Task<Crash> GetLatestCrashAsync()
+        {
+            return await _context.Crash
+                            .OrderByDescending(c => c.StartTime)
+                            .FirstOrDefaultAsync();
+        }
+
+        public Crash GetLatestCrash()
+        {
+            Crash crash = _context.Crash
+                            .OrderByDescending(c => c.StartTime)
+                            .First();
+
+            if (crash == null)
+            {
+                crash = new Crash();
+            }
+
+            return crash;
         }
 
         public async Task SetInitialPrices()
@@ -53,7 +101,6 @@ namespace BeeronomicsMVC.Services.CrashService
             {
                 drink.DrinkPrices.ActivePrice = (drink.DrinkPrices.MaxPrice + drink.DrinkPrices.MinPrice) / 2;
                 drink.PriceLastIncreased = true;
-                drink.Timer = _timedHostedService.StartNewTimer(drink);
                 _context.Drink.Update(drink);
 
                 DisplayDrink displayDrink = _drinkService.CreateDisplayDrinkObject(drink);

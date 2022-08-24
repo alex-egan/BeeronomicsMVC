@@ -55,7 +55,7 @@
             {
                 <div class="flexitem drink-display" id="div_@drink.ID">
                     <span id="@drink.ID" class="">@drink.Symbol : @Math.Round(drink.DrinkPrices.ActivePrice, 2)</span> &nbsp;&nbsp;&nbsp;<i data-indicator="price" class="@(drink.PriceLastIncreased ? "fa-solid fa-arrow-up price-increase" : "fa-solid fa-arrow-down price-decrease")"></i><br/>
-                    <canvas id="graph_@drink.ID" width="400" height="300"></canvas>
+                    <canvas id="chart_@drink.ID" width="400" height="300"></canvas>
                 </div>
             }
             else

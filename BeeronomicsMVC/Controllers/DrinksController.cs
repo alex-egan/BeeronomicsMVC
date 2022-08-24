@@ -21,12 +21,20 @@ namespace BeeronomicsMVC.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            ServiceResponse<DisplayDrink> response = await _drinkService.GetDrink(id);
-            if (!response.Success || response.Data == null) {
-                return NotFound();
+            if (id == -1)
+            {
+                return View(new DisplayDrink());
             }
+            else
+            {
+                ServiceResponse<DisplayDrink> response = await _drinkService.GetDrink(id);
+                if (!response.Success || response.Data == null)
+                {
+                    return NotFound();
+                }
 
-            return View(response.Data);
+                return View(response.Data);
+            }
         }
     }
 }

@@ -14,6 +14,10 @@
    "SelectedToBeGenerated": 0,
    "Tables": [
       {
+         "Name": "[dbo].[Crash]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Drink]",
          "ObjectType": 0
       },

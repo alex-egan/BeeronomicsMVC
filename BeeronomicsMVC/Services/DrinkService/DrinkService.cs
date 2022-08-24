@@ -164,10 +164,11 @@ namespace BeeronomicsMVC.Services.DrinkService
             _context.Drink.Update(drink);
             await _context.SaveChangesAsync();
 
+            await _timedHostedService.StartNewTimer(drink.ID);
+
             DisplayDrink displayDrink = CreateDisplayDrinkObject(drink);
 
             await _drinkHub.Clients.All.SendAsync("DrinkPriceUpdated", displayDrink);
-            drink.Timer = _timedHostedService.StartNewTimer(drink);
 
             return new ServiceResponse<DisplayDrink>
             {
@@ -231,7 +232,7 @@ namespace BeeronomicsMVC.Services.DrinkService
                 };
             }
 
-            drink.DrinkPrices.ActivePrice -= decimal.Parse("0.20");
+            drink.DrinkPrices.ActivePrice -= decimal.Parse("0.10");
             if (drink.DrinkPrices.ActivePrice < drink.DrinkPrices.MinPrice)
                 drink.DrinkPrices.ActivePrice = drink.DrinkPrices.MinPrice;
             drink.PriceLastIncreased = false;
@@ -243,7 +244,6 @@ namespace BeeronomicsMVC.Services.DrinkService
             DisplayDrink displayDrink = CreateDisplayDrinkObject(drink);
 
             await _drinkHub.Clients.All.SendAsync("DrinkPriceUpdated", displayDrink);
-            drink.Timer = _timedHostedService.StartNewTimer(drink);
 
             return new ServiceResponse<DisplayDrink>
             {
@@ -256,9 +256,37 @@ namespace BeeronomicsMVC.Services.DrinkService
         {
             return _context.PurchaseHistory
                 .Where(d => d.Fk_Drink_ID == id)
-                .OrderByDescending(d => d.Pk_Purchase_ID)
-                .Take(10)
+                .OrderByDescending(d => d.TimeStamp)
+                .Take(20)
                 .ToList();
+        }
+
+        public async Task<Drink> CreateDrink(DisplayDrink displayDrink)
+        {
+            Drink drink = new Drink
+            {
+                Symbol = displayDrink.Symbol,
+                Name = displayDrink.Name,
+                Description = displayDrink.Description,
+                Category = displayDrink.Category,
+                AddedBy = "afegan",
+                DateAdded = DateTime.Now,
+                UpdatedBy = "",
+                DateUpdated = null,
+                Active = true,
+                Photo = displayDrink.Photo,
+                PriceLastIncreased = true,
+            };
+
+            drink.DrinkPrices.ActivePrice = displayDrink.ActivePrice;
+            drink.DrinkPrices.MaxPrice = displayDrink.MaxPrice;
+            drink.DrinkPrices.MinPrice = displayDrink.MinPrice;
+            drink.DrinkPrices.UpdatedOn = DateTime.Now;
+            drink.DrinkPrices.PriceLastIncreased = true;
+
+            _context.Drink.Add(drink);
+            await _context.SaveChangesAsync();
+            return drink;
         }
     }
 }

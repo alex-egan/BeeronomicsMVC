@@ -1,5 +1,5 @@
 ﻿"use strict";
-var charts = [];
+var charts = {};
 
 $(document).ready(function () {
     $(".drink-display").each(function () {
@@ -11,34 +11,53 @@ $(document).ready(function () {
             data: id
         }).done(function (purchaseHistories) {
             if (purchaseHistories.length > 0) {
-                let data = [];
-                for (let x = 0; x < purchaseHistories.length; x++) {
-                    data.push(purchaseHistories[x].activePrice.toFixed(2));
+                let vals = [];
+                for (let x = purchaseHistories.length - 1; x >= 0; x--) {
+                    vals.push(purchaseHistories[x].activePrice.toFixed(2));
                 }
 
-                //Charts are not showing the line itself, but they are displaying fine.
-                const ctx = this.querySelector('canvas').getContext('2d');
-                const chart = new Chart(ctx, {
+                var chart = new Chart(document.getElementById(`chart_${id}`).getContext('2d'), {
                     type: 'line',
                     data: {
+                        labels: ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
                         datasets: [{
-                            label: 'Last 10',
-                            data: data,
-                            fill: true,
-                            backgroundColor: 'black',
-                            tension: 0.5
+                            data: vals,
+                            label: "Active Price",
+                            borderColor: "#3e95cd",
+                            fill: false,
+                            tension: 0.5,
+                            pointRadius: 0
                         }]
                     },
                     options: {
+                        title: {
+                            display: true,
+                            text: 'Active Price over the last minute.'
+                        },
                         scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            },
                             y: {
-                                beginAtZero: true
+                                grid: {
+                                    display: false
+                                },
+                                display: true,
+                                ticks: {
+                                    beginAtZero: false,
+                                    steps: 10,
+                                    stepValue: 5,
+                                    min: 2,
+                                    max: 8
+                                }
                             }
-                        }
+                        },
                     }
                 });
 
-                charts.push(chart);
+                charts[chart.canvas.id] = chart;
             }
         });
     });
@@ -51,6 +70,11 @@ connection.on("DrinkPriceUpdated", function (drink) {
     (drink.priceLastIncreased
         ? document.getElementById(`div_${drink.id}`).querySelector('i').className = 'fa-solid fa-arrow-up price-increase' 
         : document.getElementById(`div_${drink.id}`).querySelector('i').className = 'fa-solid fa-arrow-down price-decrease');
+
+    let chart = charts[`chart_${drink.id}`];
+    chart.data.datasets[0].data.shift();
+    chart.data.datasets[0].data.push(drink.activePrice);
+    chart.update();
 });
 
 connection.on("DrinkUpdated", function (drink) {
@@ -69,6 +93,11 @@ connection.on("CrashActionInitiated", function (drinks) {
         (drinks[x].priceLastIncreased
             ? document.getElementById(`div_${drinks[x].id}`).querySelector('i').className = 'fa-solid fa-arrow-up price-increase'
             : document.getElementById(`div_${drinks[x].id}`).querySelector('i').className = 'fa-solid fa-arrow-down price-decrease');
+
+        let chart = charts[`chart_${drinks[x].id}`];
+        chart.data.datasets[0].data.shift();
+        chart.data.datasets[0].data.push(drinks[x].activePrice);
+        chart.update();
     }
 });
 
