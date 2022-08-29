@@ -20,9 +20,9 @@ connection.on("ActiveStatusToggled", function (active, id) {
     document.getElementById(`drink_${id}`).querySelector('td.buttons .btn-deactivate').innerHTML = (active ? '<i class="fa-solid fa-ban"></i>' : '<i class="fa-solid fa-plus"></i>');
 });
 
-connection.on("CrashInitiated", function (drinks) {
-    for (var x = 0; x > drinks.length; x++) {
-        document.getElementById(`drink_${drink.id}`).querySelector('td.activeprice') = drink[x].activePrice.toFixed(2);
+connection.on("CrashActionInitiated", function (drinks) {
+    for (var x = 0; x < drinks.length; x++) {
+        document.getElementById(`drink_${drinks[x].id}`).querySelector('td.active-price').innerHTML = drinks[x].activePrice.toFixed(2);
     }
 });
 

@@ -8,12 +8,13 @@ namespace BeeronomicsMVC.Models
     public partial class DrinkPrices
     {
         public int Pk_DrinkPrice_ID { get; set; }
-        public int? Fk_Drink_ID { get; set; }
+        public int Fk_Drink_ID { get; set; }
         public decimal ActivePrice { get; set; }
         public decimal MinPrice { get; set; }
         public decimal MaxPrice { get; set; }
         public DateTime? UpdatedOn { get; set; }
         public bool PriceLastIncreased { get; set; }
+        public decimal KVal { get; set; }
 
         public virtual Drink Fk_Drink { get; set; }
     }

@@ -16,6 +16,7 @@
         void AddPurchaseHistoryForDrink(Drink drink);
         List<PurchaseHistory> GetPurchaseHistoryForDrink(int id);
         Task<Drink> CreateDrink(DisplayDrink displayDrink);
+        Task<Dictionary<string, List<decimal>>> GetPurchaseHistories();
 
     }
 }

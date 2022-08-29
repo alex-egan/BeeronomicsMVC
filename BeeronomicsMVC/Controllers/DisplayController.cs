@@ -19,11 +19,32 @@ namespace BeeronomicsMVC.Controllers
             return View(response.Data);
         }
 
+        public IActionResult BigChart()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> Shuffle()
+        {
+            ServiceResponse<List<Drink>> response = await _drinkService.GetAllDrinks();
+            if (!response.Success || response.Data.Count == 0)
+                return NotFound();
+
+            return View(response.Data);
+        }
+
         [HttpGet]
         public async Task<List<PurchaseHistory>> GetChartData(int id)
         {
             List<PurchaseHistory> PurchaseHistory = _drinkService.GetPurchaseHistoryForDrink(id);
             return PurchaseHistory;
+        }
+
+        [HttpGet]
+        public async Task<Dictionary<string, List<decimal>>> GetBigChartData()
+        {
+            Dictionary<string, List<decimal>> purchaseHistories = await _drinkService.GetPurchaseHistories();
+            return purchaseHistories;
         }
     }
 }

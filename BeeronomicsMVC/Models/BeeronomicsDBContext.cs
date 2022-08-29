@@ -65,6 +65,8 @@ namespace BeeronomicsMVC.Models
 
                 entity.Property(e => e.ActivePrice).HasColumnType("decimal(18, 2)");
 
+                entity.Property(e => e.KVal).HasColumnType("decimal(18, 2)");
+
                 entity.Property(e => e.MaxPrice).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.MinPrice).HasColumnType("decimal(18, 2)");
@@ -74,6 +76,7 @@ namespace BeeronomicsMVC.Models
                 entity.HasOne(d => d.Fk_Drink)
                     .WithOne(p => p.DrinkPrices)
                     .HasForeignKey<DrinkPrices>(d => d.Fk_Drink_ID)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__DrinkPric__Fk_Dr__3A81B327");
             });
 
@@ -91,6 +94,7 @@ namespace BeeronomicsMVC.Models
                 entity.HasOne(d => d.Fk_Drink)
                     .WithMany(p => p.PurchaseHistory)
                     .HasForeignKey(d => d.Fk_Drink_ID)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__PurchaseH__Fk_Dr__35BCFE0A");
             });
 

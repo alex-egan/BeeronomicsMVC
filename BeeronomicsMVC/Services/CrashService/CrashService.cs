@@ -31,6 +31,7 @@ namespace BeeronomicsMVC.Services.CrashService
             {
                 drink.DrinkPrices.ActivePrice = drink.DrinkPrices.MinPrice;
                 drink.PriceLastIncreased = false;
+                _drinkService.AddPurchaseHistoryForDrink(drink);
                 _context.Drink.Update(drink);
                 DisplayDrink displayDrink = _drinkService.CreateDisplayDrinkObject(drink);
 

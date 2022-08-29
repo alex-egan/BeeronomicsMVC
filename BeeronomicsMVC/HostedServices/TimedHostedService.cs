@@ -5,12 +5,10 @@ namespace BeeronomicsMVC.HostedServices
     public class TimedHostedService : BackgroundService
     {
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly IServiceProvider _provider;
         private List<DrinkTimer> _timers = new List<DrinkTimer>();
         public TimedHostedService(IServiceScopeFactory scopeFactory, IServiceProvider provider)
         {
             _scopeFactory = scopeFactory;
-            _provider = provider;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -24,15 +22,16 @@ namespace BeeronomicsMVC.HostedServices
                     await SetTimers();
                     await Task.Delay(1000 * 60);
                     await InitiateCrash();
-                    await Task.Delay(1000 * 30);
+                    await Task.Delay(1000 * 60);
                     await EndCrash();
-                    //Crash Ends
                 }
                 catch (OperationCanceledException)
                 {
                     return;
                 }
             }
+
+            await EndCrash();
         }
 
         private async Task SetInitialPrices()
@@ -79,7 +78,7 @@ namespace BeeronomicsMVC.HostedServices
             for (int x = 0; x < drinks.Count; x++)
             {
                 Random rnd = new Random();
-                int interval = rnd.Next(10, 20);
+                int interval = rnd.Next(5,20);
                 DrinkTimer drinkTimer = new DrinkTimer
                 {
                     DrinkID = drinks[x].ID,
@@ -147,8 +146,9 @@ namespace BeeronomicsMVC.HostedServices
             if (currentCrash != null && currentCrash.IsActive == false)
             {
                 Random rnd = new Random();
-                int interval = rnd.Next(10, 20);
+                int interval = rnd.Next(5, 20);
                 timer.Timer = new System.Timers.Timer(1000 * interval);
+                timer.Timer.Elapsed += async (source, e) => await DrinkTimerElapsed(source, e, drinkID);
                 timer.Timer.Start();
                 _timers[drinkID - 1] = timer;
             }

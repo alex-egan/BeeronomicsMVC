@@ -8,10 +8,10 @@ namespace BeeronomicsMVC.Models
     public partial class PurchaseHistory
     {
         public int Pk_Purchase_ID { get; set; }
-        public int? Fk_Drink_ID { get; set; }
+        public int Fk_Drink_ID { get; set; }
         public int? Purchases { get; set; }
-        public decimal? ActivePrice { get; set; }
-        public DateTime? TimeStamp { get; set; }
+        public decimal ActivePrice { get; set; }
+        public DateTime TimeStamp { get; set; }
 
         public virtual Drink Fk_Drink { get; set; }
     }

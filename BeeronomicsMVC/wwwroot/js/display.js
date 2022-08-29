@@ -16,6 +16,9 @@ $(document).ready(function () {
                     vals.push(purchaseHistories[x].activePrice.toFixed(2));
                 }
 
+                const up = (ctx, value) => ctx.p0.parsed.y < ctx.p1.parsed.y ? value : undefined;
+                const down = (ctx, value) => ctx.p0.parsed.y > ctx.p1.parsed.y ? value : undefined;
+
                 var chart = new Chart(document.getElementById(`chart_${id}`).getContext('2d'), {
                     type: 'line',
                     data: {
@@ -26,7 +29,10 @@ $(document).ready(function () {
                             borderColor: "#3e95cd",
                             fill: false,
                             tension: 0.5,
-                            pointRadius: 0
+                            pointRadius: 0,
+                            segment: {
+                                borderColor: ctx => up(ctx, 'green') || down(ctx, 'red'),
+                            }
                         }]
                     },
                     options: {
@@ -75,6 +81,10 @@ connection.on("DrinkPriceUpdated", function (drink) {
     chart.data.datasets[0].data.shift();
     chart.data.datasets[0].data.push(drink.activePrice);
     chart.update();
+
+    $('.flexitem[data-order="0"]')[0].dataset.order = 1;
+
+    document.getElementById(`div_${drink.id}`).dataset.order = 0;
 });
 
 connection.on("DrinkUpdated", function (drink) {

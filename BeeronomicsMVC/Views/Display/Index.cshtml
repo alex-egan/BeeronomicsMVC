@@ -53,18 +53,17 @@
         {
             if (drink.Active)
             {
-                <div class="flexitem drink-display" id="div_@drink.ID">
+                <div class="flexitem drink-display" id="div_@drink.ID" style="order:@(drink.ID)">
                     <span id="@drink.ID" class="">@drink.Symbol : @Math.Round(drink.DrinkPrices.ActivePrice, 2)</span> &nbsp;&nbsp;&nbsp;<i data-indicator="price" class="@(drink.PriceLastIncreased ? "fa-solid fa-arrow-up price-increase" : "fa-solid fa-arrow-down price-decrease")"></i><br/>
                     <canvas id="chart_@drink.ID" width="400" height="300"></canvas>
                 </div>
             }
             else
             {
-                <div class="flexitem drink-display" id="div_@drink.ID" style="display: none;">
+                <div class="flexitem drink-display" id="div_@drink.ID" style="display: none; order:@(drink.ID)">
                     <span id="@drink.ID" class="">@drink.Symbol : @Math.Round(drink.DrinkPrices.ActivePrice, 2)</span>&nbsp;&nbsp;&nbsp;<i data-indicator="price" class="@(drink.PriceLastIncreased ? "fa-solid fa-arrow-up price-increase" : "fa-solid fa-arrow-down price-decrease")"></i>
                 </div>
             }
-
         }
     </div>
     <script>

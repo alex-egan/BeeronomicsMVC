@@ -82,7 +82,8 @@ namespace BeeronomicsMVC.Services.DrinkService
                 AddedBy = drink.AddedBy,
                 ActivePrice = drink.DrinkPrices.ActivePrice,
                 MaxPrice = drink.DrinkPrices.MaxPrice,
-                MinPrice = drink.DrinkPrices.MinPrice
+                MinPrice = drink.DrinkPrices.MinPrice,
+                PriceLastIncreased = drink.PriceLastIncreased
             };
         }
 
@@ -154,6 +155,9 @@ namespace BeeronomicsMVC.Services.DrinkService
                     Success = false
                 };
             }
+
+            //int x = drink.PurchaseCount - drink.TimerElapsedCount;
+            //drink.DrinkPrices.ActivePrice = Convert.ToDecimal(Convert.ToDouble(drink.DrinkPrices.MaxPrice)/(1 + 3 * Math.Exp(Convert.ToDouble(-1 * drink.DrinkPrices.KVal * x))));
 
             drink.DrinkPrices.ActivePrice += decimal.Parse("0.20");
             if (drink.DrinkPrices.ActivePrice > drink.DrinkPrices.MaxPrice)
@@ -287,6 +291,28 @@ namespace BeeronomicsMVC.Services.DrinkService
             _context.Drink.Add(drink);
             await _context.SaveChangesAsync();
             return drink;
+        }
+
+        public async Task<Dictionary<string, List<decimal>>> GetPurchaseHistories()
+        {
+            Dictionary<string, List<decimal>> purchaseHistories = new Dictionary<string, List<decimal>>();
+
+            List<Drink> drinks = (await GetAllDrinks()).Data;
+
+            drinks.ForEach(drink =>
+            {
+                List<decimal> activePrices = new List<decimal>();
+                List<PurchaseHistory> purchaseHistory = GetPurchaseHistoryForDrink(drink.ID);
+                purchaseHistory.ForEach(ph =>
+                {
+                    activePrices.Add(ph.ActivePrice);
+                });
+
+                activePrices.Reverse();
+                purchaseHistories.Add(drink.Name, activePrices);
+            });
+
+            return purchaseHistories;
         }
     }
 }

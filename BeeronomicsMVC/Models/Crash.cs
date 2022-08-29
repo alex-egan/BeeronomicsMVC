@@ -11,6 +11,6 @@ namespace BeeronomicsMVC.Models
         public bool IsActive { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
-        public int Purchases { get; set; }
+        public int? Purchases { get; set; }
     }
 }
