@@ -20,9 +20,9 @@ namespace BeeronomicsMVC.HostedServices
                 {
                     await SetInitialPrices();
                     await SetTimers();
-                    await Task.Delay(1000 * 60);
+                    await Task.Delay(1000 * 120);
                     await InitiateCrash();
-                    await Task.Delay(1000 * 60);
+                    await Task.Delay(1000 * 20);
                     await EndCrash();
                 }
                 catch (OperationCanceledException)
@@ -78,7 +78,7 @@ namespace BeeronomicsMVC.HostedServices
             for (int x = 0; x < drinks.Count; x++)
             {
                 Random rnd = new Random();
-                int interval = rnd.Next(5,20);
+                int interval = rnd.Next(15,60);
                 DrinkTimer drinkTimer = new DrinkTimer
                 {
                     DrinkID = drinks[x].ID,
@@ -146,7 +146,7 @@ namespace BeeronomicsMVC.HostedServices
             if (currentCrash != null && currentCrash.IsActive == false)
             {
                 Random rnd = new Random();
-                int interval = rnd.Next(5, 20);
+                int interval = rnd.Next(15, 60);
                 timer.Timer = new System.Timers.Timer(1000 * interval);
                 timer.Timer.Elapsed += async (source, e) => await DrinkTimerElapsed(source, e, drinkID);
                 timer.Timer.Start();

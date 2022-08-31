@@ -107,6 +107,29 @@ namespace BeeronomicsMVC.Services.DrinkService
             };
         }
 
+        public async Task<ServiceResponse<List<Drink>>> GetAllDrinksForShuffle()
+        {
+            List<Drink> drinks = await _context.Drink
+                .Include(d => d.DrinkPrices)
+                .OrderByDescending(d => d.DrinkPrices.ActivePrice)
+                .ToListAsync();
+
+            if (drinks == null || drinks.Count == 0)
+            {
+                return new ServiceResponse<List<Drink>>
+                {
+                    Success = false,
+                    Message = "Could not find drinks."
+                };
+            }
+
+            return new ServiceResponse<List<Drink>>
+            {
+                Success = true,
+                Data = drinks
+            };
+        }
+
         public async Task<List<Drink>> GetAllDrinksFromDB()
         {
             return await _context

@@ -4,6 +4,7 @@
     {
         Task<ServiceResponse<List<Drink>>> GetAllDrinks();
         Task<ServiceResponse<List<Drink>>> GetActiveDrinks();
+        Task<ServiceResponse<List<Drink>>> GetAllDrinksForShuffle();
         Task<ServiceResponse<DisplayDrink>> GetDrink(int id);
         Task<ServiceResponse<DisplayDrink>> UpdateDrink(DisplayDrink drink);
         Task<ServiceResponse<DisplayDrink>> IncreaseDrinkPrice(int id);

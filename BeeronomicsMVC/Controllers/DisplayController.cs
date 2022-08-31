@@ -26,7 +26,7 @@ namespace BeeronomicsMVC.Controllers
 
         public async Task<IActionResult> Shuffle()
         {
-            ServiceResponse<List<Drink>> response = await _drinkService.GetAllDrinks();
+            ServiceResponse<List<Drink>> response = await _drinkService.GetAllDrinksForShuffle();
             if (!response.Success || response.Data.Count == 0)
                 return NotFound();
 
