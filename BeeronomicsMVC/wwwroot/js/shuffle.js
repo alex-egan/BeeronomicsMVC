@@ -1,25 +1,103 @@
-﻿var connection = new signalR.HubConnectionBuilder().withUrl("/drinkHub").build();
+﻿let drinks = [];
+
+//$(document).ready(function () {
+//    for (let x = 0; x < $('.flexitem').length; x++) {
+//        drinks.push()
+//    }
+//});
+
+var connection = new signalR.HubConnectionBuilder().withUrl("/drinkHub").build();
 
 connection.on("DrinkPriceUpdated", function (drink) {
     let divDrink = document.getElementById(`div_${drink.id}`);
+    let currentIndex = $('li').index(divDrink);
+    let newIndex = 0;
 
-    if (divDrink.style.order != 0) {
-        divDrink.dataset.hidden = "true";
+    $('.active-price').each(function () {
+        if (parseFloat(drink.activePrice) >= parseFloat(this.innerHTML)
+            && $('li').index(this.parentElement) != currentIndex) {
+            newIndex = $('li').index(this.parentElement);
+            return false;
+        }
+        else {
+            newIndex++;
+        }
+    });
 
-        $('.flexitem').each(function () {
-            this.style.order = parseInt(this.style.order) + 1;
+    if (newIndex == $('li').length) {
+        let li = $('li')[newIndex - 1];
+        //$(divDrink).addClass('not-visible');
+        //let newDivDrink = $(divDrink).clone();
+        //$(li).after(newDivDrink);
+        //$(divDrink).remove();
+        //$(newDivDrink).removeClass('not-visible');
+
+        let newDivDrink = $(divDrink).clone();
+        $(newDivDrink).addClass('ui-effects-placeholder');
+        $(newDivDrink).hide();
+        $(li).after(newDivDrink);
+
+        $(divDrink).toggle('slide', { direction: 'left' }, 500, function () {
+            $(newDivDrink).toggle('slide', { direction: 'left' }, 500);
+            $(divDrink).remove();
+            document.getElementById(`div_${drink.id}`).getElementsByClassName('active-price')[0].innerHTML = `${drink.activePrice.toFixed(2)}`;
+            (drink.priceLastIncreased
+                ? document.getElementById(`div_${drink.id}`).querySelector('i').className = 'fa-solid fa-arrow-up price-increase'
+                : document.getElementById(`div_${drink.id}`).querySelector('i').className = 'fa-solid fa-arrow-down price-decrease');
         });
 
-        divDrink.style.order = 0;
+        //$(divDrink).toggle('slide', { direction: 'left' }, 250).promise().pipe(function () {
+        //    $(newDivDrink).toggle('slide', { direction: 'left' }, 250);
+        //    $(divDrink).remove();
+        //    document.getElementById(`div_${drink.id}`).getElementsByClassName('active-price')[0].innerHTML = `${drink.activePrice.toFixed(2)}`;
+        //    (drink.priceLastIncreased
+        //        ? document.getElementById(`div_${drink.id}`).querySelector('i').className = 'fa-solid fa-arrow-up price-increase'
+        //        : document.getElementById(`div_${drink.id}`).querySelector('i').className = 'fa-solid fa-arrow-down price-decrease');
+        //});
 
-        divDrink.classList.add('fadeIn');
-        divDrink.dataset.hidden = "false";
+    }
+    else {
+        //$(divDrink).css('visibility', 'hidden');
+        //let newDivDrink = $(divDrink).clone();
+        //$(li).after(newDivDrink);
+        //$(divDrink).remove();
+        //$(newDivDrink).css('visibility', 'visible');
+
+        let li = $('li')[newIndex];
+        let newDivDrink = $(divDrink).clone();
+        $(newDivDrink).addClass('ui-effects-placeholder');
+        $(newDivDrink).hide();
+        $(li).before(newDivDrink);
+
+        $(divDrink).toggle('slide', { direction: 'left' }, 500, function () {
+            $(newDivDrink).toggle('slide', { direction: 'left' }, 500);
+            $(divDrink).remove();
+            document.getElementById(`div_${drink.id}`).getElementsByClassName('active-price')[0].innerHTML = `${drink.activePrice.toFixed(2)}`;
+            (drink.priceLastIncreased
+                ? document.getElementById(`div_${drink.id}`).querySelector('i').className = 'fa-solid fa-arrow-up price-increase'
+                : document.getElementById(`div_${drink.id}`).querySelector('i').className = 'fa-solid fa-arrow-down price-decrease');
+        });
+
+        //$(divDrink).toggle('slide', { direction: 'left' }, 250).promise().pipe(function () {
+        //    $(newDivDrink).toggle('slide', { direction: 'left' }, 250);
+        //    $(divDrink).remove();
+        //    document.getElementById(`div_${drink.id}`).getElementsByClassName('active-price')[0].innerHTML = `${drink.activePrice.toFixed(2)}`;
+        //    (drink.priceLastIncreased
+        //        ? document.getElementById(`div_${drink.id}`).querySelector('i').className = 'fa-solid fa-arrow-up price-increase'
+        //        : document.getElementById(`div_${drink.id}`).querySelector('i').className = 'fa-solid fa-arrow-down price-decrease');
+        //});
     }
 
-    document.getElementById(`${drink.id}`).innerHTML = `${drink.symbol} : ${drink.activePrice.toFixed(2)}`;
-    (drink.priceLastIncreased
-        ? document.getElementById(`div_${drink.id}`).querySelector('i').className = 'fa-solid fa-arrow-up price-increase'
-        : document.getElementById(`div_${drink.id}`).querySelector('i').className = 'fa-solid fa-arrow-down price-decrease');
+
+    //$(divDrink).slideToggle(100, function () {
+        //    $(li).after(divDrink);
+        //    $(divDrink).slideToggle(500);
+        //});
+
+    //$(divDrink).slideToggle(100, function () {
+        //    $(li).after(divDrink);
+        //    $(divDrink).slideToggle(500);
+        //});
 });
 
 connection.on("DrinkUpdated", function (drink) {
@@ -34,7 +112,7 @@ connection.on("ActiveStatusToggled", function (active, id) {
 
 connection.on("CrashActionInitiated", function (drinks) {
     for (var x = 0; x < drinks.length; x++) {
-        document.getElementById(`${drinks[x].id}`).innerHTML = `${drinks[x].symbol} : ${drinks[x].activePrice.toFixed(2)}`;
+        document.getElementById(`div_${drinks[x].id}`).getElementsByClassName('active-price')[0].innerHTML = `${drinks[x].activePrice.toFixed(2)}`;
         (drinks[x].priceLastIncreased
             ? document.getElementById(`div_${drinks[x].id}`).querySelector('i').className = 'fa-solid fa-arrow-up price-increase'
             : document.getElementById(`div_${drinks[x].id}`).querySelector('i').className = 'fa-solid fa-arrow-down price-decrease');

@@ -1,6 +1,10 @@
 ﻿@model IEnumerable<BeeronomicsMVC.Models.Drink>
 @inject IJSRuntime JSRuntime
 
+@{
+    Layout = null;
+}
+
 <!DOCTYPE html>
 
 <html>
@@ -20,6 +24,7 @@
             font-size: 30px;
             width: 400px;
         }
+
         .flexbox {
             display: flex;
             width: 100%;
@@ -28,6 +33,7 @@
             flex-wrap: wrap;
             background: #cecece;
             flex-direction: column;
+            padding: 0;
         }
 
         .flexitem {
@@ -36,45 +42,62 @@
             background: #16B6B6FF;
             width: 100%;
             max-width: 100%;
+            animation: ease-out;
             text-align: center;
-            animation-name: fadeIn;
-            animation-duration: 2s;
+            visibility: visible;
+        }
+
+        .background-teal {
+            width: 50%;
+            background: #16B6B6FF;
+        }
+
+        .background-black {
+            width: 50%;
+            background: black;
         }
 
         .flexitem[data-hidden="true"] {
             display: none;    
         }
 
-        @@keyframes fadeIn {
-           from    { opacity: 0; }
-           to      { opacity: 1; }
+        .ui-effects-placeholder {
+            margin: 0px 0px 4px; 
+            float: none; 
+            width: 800px; 
+            height: 34.5px;
         }
 
+        .not-visible {
+            visibility: hidden;
+        }
+ 
         </style>
     </head>
     <body>
-        <div class="flexbox">
+        <ul id="drinks" class="flexbox">
             @foreach(Drink drink in Model)
             {
                 if (drink.Active)
                 {
-                    <div class="drink-display flexitem fadeIn" id="div_@drink.ID" style="order: @drink.ID;">
-                        <span id="@drink.ID" class="">@drink.Symbol : @Math.Round(drink.DrinkPrices.ActivePrice, 2)</span> &nbsp;&nbsp;&nbsp;<i data-indicator="price" class="@(drink.PriceLastIncreased ? "fa-solid fa-arrow-up price-increase" : "fa-solid fa-arrow-down price-decrease")"></i><br/>
-                    </div>
+                    <li class="drink-display flexitem fadeIn" id="div_@drink.ID" style="list-style-type: none;">
+                        <span id="@drink.ID" class="span-symbol">@drink.Symbol : </span><span class="active-price">@Math.Round(drink.DrinkPrices.ActivePrice, 2)</span> &nbsp;&nbsp;&nbsp;<i data-indicator="price" class="@(drink.PriceLastIncreased ? "fa-solid fa-arrow-up price-increase" : "fa-solid fa-arrow-down price-decrease")"></i><br/>
+                    </li>
                 }
                 else
                 {
-                    <div class="drink-display flexitem fadeIn" id="div_@drink.ID" data-order="1" style="display: none; order: @drink.ID;">
-                        <span id="@drink.ID" class="">@drink.Symbol : @Math.Round(drink.DrinkPrices.ActivePrice, 2)</span>&nbsp;&nbsp;&nbsp;<i data-indicator="price" class="@(drink.PriceLastIncreased ? "fa-solid fa-arrow-up price-increase" : "fa-solid fa-arrow-down price-decrease")"></i>
-                    </div>
+                    <li class="drink-display flexitem fadeIn" id="div_@drink.ID" data-order="1" style="display: none; list-style-type: none;">
+                        <span id="@drink.ID" class="">@drink.Symbol : </span><span>@Math.Round(drink.DrinkPrices.ActivePrice, 2)</span> &nbsp;&nbsp;&nbsp;<i data-indicator="price" class="@(drink.PriceLastIncreased ? "fa-solid fa-arrow-up price-increase" : "fa-solid fa-arrow-down price-decrease")"></i><br/>
+                    </li>
                 }
             }
-        </div>
+        </ul>
         <script>
             var getChartDataUrl= "@Url.Action("GetChartData", "Display")";
         </script>
     </body>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://kit.fontawesome.com/92134c6582.js" crossorigin="anonymous"></script>
     <script src="~/js/signalr/dist/browser/signalr.js"></script>
